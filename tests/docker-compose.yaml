@@ -1,0 +1,15 @@
+name: nc-tests
+services:
+  nextcloud:
+    image: nextcloud:31-apache
+    ports:
+      - "8088:80"
+    environment:
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: admin
+      NEXTCLOUD_TRUSTED_DOMAINS: localhost
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "wget -qO- http://localhost/status.php >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
