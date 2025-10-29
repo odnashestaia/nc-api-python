@@ -11,12 +11,13 @@ class BaseManager:
         self.USERNAME: str = USERNAME
         self.PASSWORD: str = PASSWORD
 
-    def _request(
+    def _request_webdav(
         self,
         method: str,
         path: str,
         data: Optional[bytes | str] = None,
         headers: Optional[Dict[str, str]] = None,
+        is_rest: bool = False,
         **kwargs: Any,
     ) -> Response:
         """
@@ -29,7 +30,11 @@ class BaseManager:
         :param kwargs: Additional parameters for requests
         :return: requests.Response object
         """
-        url = self.NEXTCLOUD_URL + path
+        if is_rest:
+            url = "/remote.php/dav/files/" + self.USERNAME
+        else:
+            url = "/"
+        url = self.NEXTCLOUD_URL + url + path
         auth = HTTPBasicAuth(self.USERNAME, self.PASSWORD)
 
         request_headers: Dict[str, str] = headers or {}

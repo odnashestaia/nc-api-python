@@ -47,7 +47,7 @@ class PathManager(BaseManager):
             new_url = f"{self.NEXTCLOUD_URL}{NEW_PATH}"
 
             # Send the MOVE request to rename/move the resource
-            response = self._request(
+            response = self._request_webdav(
                 "MOVE",
                 CURRENT_PATH,
                 headers={"Destination": new_url},
@@ -87,7 +87,7 @@ class PathManager(BaseManager):
                 raise ValueError("The target_path must be a string.")
 
             # Send the DELETE request
-            response = self._request("DELETE", TRAGET_PATH)
+            response = self._request_webdav("DELETE", TRAGET_PATH)
 
             # Handle the response
             if response.status_code in [200, 201, 207, 206]:
@@ -130,12 +130,14 @@ class PathManager(BaseManager):
                     with open(local_file_path, "rb") as f:
                         file_data = f.read()
 
-                    response = self._request("PUT", remote_file_path, data=file_data)
+                    response = self._request_webdav(
+                        "PUT", remote_file_path, data=file_data
+                    )
                     if response.status_code in [200, 201, 207, 206]:
                         continue
                     if response.status_code == 409:
                         # overwrite
-                        response = self._request(
+                        response = self._request_webdav(
                             "PUT", remote_file_path, data=file_data
                         )
                         if response.status_code == 201:

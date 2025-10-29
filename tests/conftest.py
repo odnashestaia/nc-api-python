@@ -29,7 +29,7 @@ class WebDavDirectoryHelper(BaseManager):
     """Минимальный помощник для операций MKCOL/PROPFIND без изменения исходников."""
 
     def DirectoryExists_Check(self, path: str) -> bool:
-        r = self._request("PROPFIND", path, headers={"Depth": "1"})
+        r = self._request_webdav("PROPFIND", path, headers={"Depth": "1"})
         if r.status_code == 207:
             return True
         if r.status_code == 404:
@@ -37,7 +37,7 @@ class WebDavDirectoryHelper(BaseManager):
         raise RuntimeError(f"Unexpected response: {r.status_code} - {r.text}")
 
     def CreateDirectory(self, path: str) -> bool:
-        r = self._request("MKCOL", path)
+        r = self._request_webdav("MKCOL", path)
         if r.status_code in (201, 405):
             return True
         raise RuntimeError(f"Failed to create dir: {r.status_code} - {r.text}")

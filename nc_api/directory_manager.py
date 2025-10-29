@@ -18,7 +18,7 @@ class DirectoryManager(BaseManager):
         """
         try:
             # Send a PROPFIND request to check if the directory exists
-            response = self._request(
+            response = self._request_webdav(
                 "PROPFIND",
                 DIRECTORY_PATH,
                 headers={"Depth": "1"},
@@ -44,7 +44,7 @@ class DirectoryManager(BaseManager):
         if not isinstance(DIRECTORY_PATH, str) or not DIRECTORY_PATH:
             raise ValueError("DIRECTORY_PATH must be a non-empty string.")
 
-        response = self._request("MKCOL", DIRECTORY_PATH)
+        response = self._request_webdav("MKCOL", DIRECTORY_PATH)
 
         if response.status_code in [200, 201, 207, 206]:
             return True

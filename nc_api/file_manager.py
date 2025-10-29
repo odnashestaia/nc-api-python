@@ -43,11 +43,13 @@ class FileManager(BaseManager):
 
             # Proceed with file upload
             if FILE:
-                response = self._request("PUT", REMOTE_UPLOAD_PATH, data=FILE)
+                response = self._request_webdav("PUT", REMOTE_UPLOAD_PATH, data=FILE)
             else:
                 with open(LOCAL_UPLOAD_PATH, "rb") as file:
                     file_data = file.read()
-                response = self._request("PUT", REMOTE_UPLOAD_PATH, data=file_data)
+                response = self._request_webdav(
+                    "PUT", REMOTE_UPLOAD_PATH, data=file_data
+                )
             if response.status_code in [200, 201, 207, 206]:
                 return True
             else:
@@ -70,7 +72,7 @@ class FileManager(BaseManager):
         """
         try:
             # Send a request to GET a file from REMOTE_DOWNLOAD_PATH.
-            response = self._request("GET", REMOTE_DOWNLOAD_PATH)
+            response = self._request_webdav("GET", REMOTE_DOWNLOAD_PATH)
             if response.status_code in [200, 201, 207, 206]:
                 with open(LOCAL_DOWNLOAD_PATH, "wb") as file:
                     file.write(response.content)
@@ -92,7 +94,7 @@ class FileManager(BaseManager):
         """
         try:
             # Send PROPFIND request
-            response = self._request(
+            response = self._request_webdav(
                 "PROPFIND",
                 REMOTE_FILE_PATH,
                 data=propfind_xml,

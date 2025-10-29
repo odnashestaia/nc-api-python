@@ -37,8 +37,12 @@ class UserManager(BaseManager):
                 params["offset"] = offset
 
             # Send GET request with OCS-APIRequest header
-            response = self._request(
-                "GET", url, headers={"OCS-APIRequest": "true"}, params=params
+            response = self._request_webdav(
+                "GET",
+                url,
+                headers={"OCS-APIRequest": "true"},
+                params=params,
+                is_rest=True,
             )
 
             if response.status_code in [200, 201, 207, 206]:
@@ -102,7 +106,12 @@ class UserManager(BaseManager):
             url = f"/ocs/v1.php/cloud/users/{userid}"
 
             # Send GET request with OCS-APIRequest header
-            response = self._request("GET", url, headers={"OCS-APIRequest": "true"})
+            response = self._request_webdav(
+                "GET",
+                url,
+                headers={"OCS-APIRequest": "true"},
+                is_rest=True,
+            )
 
             if response.status_code in [200, 201, 207, 206]:
                 # Parse XML response
