@@ -33,7 +33,7 @@ class BaseManager:
         if is_rest:
             url = "/"
         else:
-            url = "/remote.php/dav/files/" + self.USERNAME
+            url = "/remote.php/dav/files/"
         url = self.NEXTCLOUD_URL + url + path
         auth = HTTPBasicAuth(self.USERNAME, self.PASSWORD)
 
