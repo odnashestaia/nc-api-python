@@ -26,7 +26,7 @@ class UserManager(BaseManager):
         """
         try:
             # Build URL with parameters
-            url = "/ocs/v1.php/cloud/users"
+            url = "ocs/v1.php/cloud/users"
             params = {}
 
             if search:
@@ -41,7 +41,7 @@ class UserManager(BaseManager):
                 "GET", url, headers={"OCS-APIRequest": "true"}, params=params
             )
 
-            if response.status_code == 200:
+            if response.status_code in [200, 201, 207, 206]:
                 # Parse XML response
                 root = ET.fromstring(response.text)
 
@@ -104,7 +104,7 @@ class UserManager(BaseManager):
             # Send GET request with OCS-APIRequest header
             response = self._request("GET", url, headers={"OCS-APIRequest": "true"})
 
-            if response.status_code == 200:
+            if response.status_code in [200, 201, 207, 206]:
                 # Parse XML response
                 root = ET.fromstring(response.text)
 

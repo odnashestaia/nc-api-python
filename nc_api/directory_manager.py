@@ -23,7 +23,7 @@ class DirectoryManager(BaseManager):
                 DIRECTORY_PATH,
                 headers={"Depth": "1"},
             )
-            if response.status_code == 207:
+            if response.status_code in [200, 201, 207, 206]:
                 # 207 means directory exists (WebDAV specific)
                 return True
             else:
@@ -46,7 +46,7 @@ class DirectoryManager(BaseManager):
 
         response = self._request("MKCOL", DIRECTORY_PATH)
 
-        if response.status_code == 201:
+        if response.status_code in [200, 201, 207, 206]:
             return True
         if response.status_code == 405:
             return True

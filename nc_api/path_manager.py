@@ -54,7 +54,7 @@ class PathManager(BaseManager):
             )
 
             # Handle the response
-            if response.status_code in (201, 204):
+            if response.status_code in [200, 201, 207, 206]:
                 return True
             if response.status_code == 404:
                 raise RuntimeError(
@@ -90,7 +90,7 @@ class PathManager(BaseManager):
             response = self._request("DELETE", TRAGET_PATH)
 
             # Handle the response
-            if response.status_code == 204:
+            if response.status_code in [200, 201, 207, 206]:
                 return f"Successfully deleted '{TRAGET_PATH}'."
             if response.status_code == 404:
                 raise RuntimeError(f"The resource at '{TRAGET_PATH}' does not exist.")
@@ -131,7 +131,7 @@ class PathManager(BaseManager):
                         file_data = f.read()
 
                     response = self._request("PUT", remote_file_path, data=file_data)
-                    if response.status_code == 201:
+                    if response.status_code in [200, 201, 207, 206]:
                         continue
                     if response.status_code == 409:
                         # overwrite

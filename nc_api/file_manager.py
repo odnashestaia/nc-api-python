@@ -48,7 +48,7 @@ class FileManager(BaseManager):
                 with open(LOCAL_UPLOAD_PATH, "rb") as file:
                     file_data = file.read()
                 response = self._request("PUT", REMOTE_UPLOAD_PATH, data=file_data)
-            if response.status_code == 201:
+            if response.status_code in [200, 201, 207, 206]:
                 return True
             else:
                 raise HTTPError(
@@ -71,7 +71,7 @@ class FileManager(BaseManager):
         try:
             # Send a request to GET a file from REMOTE_DOWNLOAD_PATH.
             response = self._request("GET", REMOTE_DOWNLOAD_PATH)
-            if response.status_code == 200:
+            if response.status_code in [200, 201, 207, 206]:
                 with open(LOCAL_DOWNLOAD_PATH, "wb") as file:
                     file.write(response.content)
                 return True
@@ -99,7 +99,7 @@ class FileManager(BaseManager):
                 headers={"Depth": "0", "Content-Type": "application/xml"},
             )
 
-            if response.status_code == 207:
+            if response.status_code in [200, 201, 207, 206]:
                 # Parse XML response
                 root = ET.fromstring(response.text)
 
