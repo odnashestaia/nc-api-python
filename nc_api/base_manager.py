@@ -31,9 +31,9 @@ class BaseManager:
         :return: requests.Response object
         """
         if is_rest:
-            url = "/remote.php/dav/files/" + self.USERNAME
-        else:
             url = "/"
+        else:
+            url = "/remote.php/dav/files/" + self.USERNAME
         url = self.NEXTCLOUD_URL + url + path
         auth = HTTPBasicAuth(self.USERNAME, self.PASSWORD)
 

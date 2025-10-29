@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="nc-api",
-    version="0.2.3",
+    version="0.2.5",
     author="ODNA_SHESTA",
     author_email="playcola2003@gmail.com",
     url="https://github.com/odnashestaia/nc-api-python",
