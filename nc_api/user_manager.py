@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import json
 from typing import Dict, List, Optional, Union
 
 from requests import HTTPError
@@ -26,7 +26,7 @@ class UserManager(BaseManager):
         """
         try:
             # Build URL with parameters
-            url = "ocs/v1.php/cloud/users"
+            url = "ocs/v1.php/cloud/users?format=json"
             params = {}
 
             if search:
@@ -46,33 +46,16 @@ class UserManager(BaseManager):
             )
 
             if response.status_code in [200, 201, 207, 206]:
-                # Parse XML response
-                root = ET.fromstring(response.text)
-
-                # Check status
-                statuscode = root.find(".//statuscode")
-                if statuscode is not None and statuscode.text == "100":
-                    # Extract list of users
-                    users = []
-                    for user_elem in root.findall(".//users/element"):
-                        if user_elem.text:
-                            users.append(user_elem.text)
-
-                    return users
-                else:
-                    # Get error message
-                    message = root.find(".//message")
-                    if message is not None:
-                        raise ValueError(f"OCS error: {message.text}")
-                    raise ValueError("Failed to retrieve users list")
+                # Parse JSON response
+                return json.loads(response.text)
             else:
                 raise HTTPError(
                     f"HTTP error: {response.status_code} - {response.text}",
                     response=response,
                 )
 
-        except ET.ParseError as e:
-            raise ValueError(f"Failed to parse XML: {e}") from e
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse JSON: {e}") from e
         except Exception as e:
             raise Exception(f"Failed to retrieve users list: {e}") from e
 
@@ -103,7 +86,7 @@ class UserManager(BaseManager):
                 raise ValueError("One of username, user_id or name must be provided")
 
             # Build URL for specific user
-            url = f"/ocs/v1.php/cloud/users/{userid}"
+            url = f"/ocs/v1.php/cloud/users/{userid}?format=json"
 
             # Send GET request with OCS-APIRequest header
             response = self._request_webdav(
@@ -114,38 +97,8 @@ class UserManager(BaseManager):
             )
 
             if response.status_code in [200, 201, 207, 206]:
-                # Parse XML response
-                root = ET.fromstring(response.text)
-
-                # Check status
-                statuscode = root.find(".//statuscode")
-                if statuscode is not None and statuscode.text == "100":
-                    # Extract all user data
-                    user_data = {}
-                    data_elem = root.find(".//data")
-
-                    if data_elem is not None:
-                        # Get all user fields
-                        for child in data_elem:
-                            tag_name = child.tag
-
-                            # Process groups separately
-                            if tag_name == "groups":
-                                groups = []
-                                for group_elem in child.findall(".//element"):
-                                    if group_elem.text:
-                                        groups.append(group_elem.text)
-                                user_data["groups"] = groups
-                            else:
-                                user_data[tag_name] = child.text if child.text else ""
-
-                    return user_data
-                else:
-                    # Get error message
-                    message = root.find(".//message")
-                    if message is not None:
-                        raise ValueError(f"OCS error: {message.text}")
-                    raise ValueError("Failed to retrieve user data")
+                # Parse JSON response
+                return json.loads(response.text)
             elif response.status_code == 404:
                 raise HTTPError(f"User not found: {userid}", response=response)
             else:
@@ -154,7 +107,7 @@ class UserManager(BaseManager):
                     response=response,
                 )
 
-        except ET.ParseError as e:
-            raise ValueError(f"Failed to parse XML: {e}") from e
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse JSON: {e}") from e
         except Exception as e:
             raise Exception(f"Failed to retrieve user data: {e}") from e
