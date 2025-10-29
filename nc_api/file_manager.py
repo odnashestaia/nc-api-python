@@ -37,9 +37,9 @@ class FileManager(BaseManager):
             remote_dir = "/".join(REMOTE_UPLOAD_PATH.split("/")[:-1])
 
             # Check if the directory exists
-            dir_check = self.directory_manager.DirectoryExists_Check(remote_dir)
+            dir_check = self.directory_manager.directory_exists_check(remote_dir)
             if not dir_check:
-                self.directory_manager.CreateDirectory(remote_dir)
+                raise HTTPError(f"Directory does not exist: {remote_dir}")
 
             # Proceed with file upload
             if FILE:
