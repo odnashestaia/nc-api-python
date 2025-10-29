@@ -104,7 +104,7 @@ class PathManager(BaseManager):
         except Exception:
             raise
 
-    def UploadFolder(self, LOCAL_FOLDER_PATH: str, REMOTE_FOLDER_PATH: str) -> None:
+    def upload_folder(self, LOCAL_FOLDER_PATH: str, REMOTE_FOLDER_PATH: str) -> None:
         """
         Uploads a folder and its contents to Nextcloud, overwriting any existing files.
 
@@ -118,8 +118,8 @@ class PathManager(BaseManager):
                     "\\", "/"
                 )
 
-                if not self.directory_manager.DirectoryExists_Check(remote_path):
-                    self.directory_manager.CreateDirectory(remote_path)
+                if not self.directory_manager.directory_exists_check(remote_path):
+                    self.directory_manager.create_directory(remote_path)
 
                 for file in files:
                     local_file_path = os.path.join(root, file)

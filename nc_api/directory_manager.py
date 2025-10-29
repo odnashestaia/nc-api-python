@@ -1,5 +1,7 @@
 from typing import Union
 
+from requests import HTTPError
+
 from nc_api.base_manager import BaseManager
 
 
@@ -24,9 +26,36 @@ class DirectoryManager(BaseManager):
             if response.status_code == 207:
                 # 207 means directory exists (WebDAV specific)
                 return True
-            elif response.status_code == 404:
-                return False
             else:
-                return f"Unexpected response: {response.status_code} - {response.text}"
-        except Exception as e:
-            return f"An error occurred while checking the directory: {e}"
+                raise HTTPError(
+                    f"Failed to check if directory exists: {response.status_code} - {response.text}",
+                    response=response,
+                )
+        except Exception:
+            return False
+
+    def create_directory(self, DIRECTORY_PATH: str) -> bool:
+        """
+        Создаёт директорию в Nextcloud с помощью WebDAV MKCOL.
+
+        :param DIRECTORY_PATH: Путь директории для создания.
+        :return: True при успехе или если директория уже существует.
+        """
+        if not isinstance(DIRECTORY_PATH, str) or not DIRECTORY_PATH:
+            raise ValueError("DIRECTORY_PATH must be a non-empty string.")
+
+        response = self._request("MKCOL", DIRECTORY_PATH)
+
+        if response.status_code == 201:
+            return True
+        if response.status_code == 405:
+            return True
+        if response.status_code == 409:
+            raise FileNotFoundError(
+                f"Parent directory does not exist for '{DIRECTORY_PATH}'."
+            )
+
+        raise HTTPError(
+            f"Failed to create directory '{DIRECTORY_PATH}': {response.status_code} - {response.text}",
+            response=response,
+        )

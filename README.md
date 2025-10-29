@@ -25,19 +25,24 @@ client = NextcloudClient(BASE, "admin", "admin")
 ## Функционал модулей
 
 ### DirectoryManager
+
 - **directory_exists_check(path: str) -> bool | str**: проверка существования директории через WebDAV PROPFIND.
+- **create_directory(DIRECTORY_PATH: str) -> bool**: создание директории через WebDAV MKCOL (201/405 → True; 409 → FileNotFoundError; иные коды → HTTPError).
 
 ### FileManager
+
 - **upload_file(LOCAL_UPLOAD_PATH | FILE, REMOTE_UPLOAD_PATH) -> bool**: загрузка файла; при необходимости создаёт каталоги (при наличии `directory_manager`).
 - **download_file(LOCAL_DOWNLOAD_PATH, REMOTE_DOWNLOAD_PATH) -> bool**: скачивание файла.
 - **get_data_file(REMOTE_FILE_PATH) -> dict | str**: метаданные файла через WebDAV PROPFIND (XML).
 
 ### PathManager
+
 - **rename_path(CURRENT_PATH, NEW_PATH) -> bool**: переименование/перемещение ресурса (MOVE); создаёт недостающие каталоги.
 - **delete_path(TARGET_PATH) -> bool**: удаление файла/директории (DELETE).
 - **UploadFolder(LOCAL_FOLDER_PATH, REMOTE_FOLDER_PATH) -> None**: рекурсивная загрузка каталога.
 
 ### UserManager (OCS API)
+
 - **get_users(search=None, limit=None, offset=None) -> list[str] | str**: список пользователей.
 - **get_user(username=None, user_id=None, name=None) -> dict | str**: данные пользователя.
 
@@ -59,6 +64,7 @@ client.paths.delete_path("/tmp/hi.txt")
 
 # Директории
 client.dirs.directory_exists_check("/tmp")
+client.dirs.create_directory("/tmp")
 
 # Пользователи (OCS)
 client.users.get_users(limit=10)
@@ -66,5 +72,3 @@ client.users.get_user(username="admin")
 ```
 
 Примечание: `BASE` должен указывать на корень WebDAV для конкретного пользователя: `http(s)://<host>/remote.php/dav/files/<username>`.
-
-
